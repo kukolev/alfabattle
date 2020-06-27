@@ -1,0 +1,18 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: cashbox
+
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: none
+
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://178.154.247.34:5432/alfa_battle
+    username: alfa_battle
+    password: qwe123

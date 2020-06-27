@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: analize-it
+
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+    bootstrap-servers: 178.154.247.34:29092
+
+kafka:
+  input-topic: RAW_PAYMENTS

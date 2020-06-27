@@ -58,7 +58,7 @@ public class ApiRestController {
         dataHolder.stream()
                 .filter(a -> a.getUserId().equals(userId))
                 .forEach(a -> {
-                    Long categoryCount = mapCategoryId.computeIfAbsent(a.getCategoryId(), (k) -> 0L);
+                    var categoryCount = mapCategoryId.computeIfAbsent(a.getCategoryId(), (k) -> 0L);
                     mapCategoryId.put(a.getCategoryId(), categoryCount + 1);
                 });
 
@@ -85,8 +85,8 @@ public class ApiRestController {
         dataHolder.stream()
                 .filter(data -> data.getUserId().equals(userId))
                 .forEach(data -> {
-                    TemplateDto key = new TemplateDto(data.getRecipientId(), data.getCategoryId(), data.getAmount());
-                    Integer counter = templatesMap.computeIfAbsent(key, k -> 0);
+                    var key = new TemplateDto(data.getRecipientId(), data.getCategoryId(), data.getAmount());
+                    var counter = templatesMap.computeIfAbsent(key, k -> 0);
                     counter = counter + 1;
                     templatesMap.put(key, counter);
                 });
