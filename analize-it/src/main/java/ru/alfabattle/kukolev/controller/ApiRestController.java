@@ -7,6 +7,7 @@ import ru.alfabattle.kukolev.exception.EntityNotFoundException;
 import ru.alfabattle.kukolev.service.KafkaDataHolder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class ApiRestController {
@@ -78,15 +79,21 @@ public class ApiRestController {
 
     @GetMapping("/analytic/{userId}/templates")
     public List<TemplateDto> getTemplates(@PathVariable String userId) {
+        getByUserId(userId);
 
         var templatesMap = new HashMap<TemplateDto, Integer>();
-        dataHolder.stream().forEach(data -> {
-            TemplateDto key = new TemplateDto(data.getRecipientId(), data.getCategoryId(), data.getAmount());
-            Integer counter = templatesMap.computeIfAbsent(key, k -> 0);
-            counter = counter + 1;
-            templatesMap.put(key, counter);
-        });
-        System.out.println(templatesMap);
-        return null;
+        dataHolder.stream()
+                .filter(data -> data.getUserId().equals(userId))
+                .forEach(data -> {
+                    TemplateDto key = new TemplateDto(data.getRecipientId(), data.getCategoryId(), data.getAmount());
+                    Integer counter = templatesMap.computeIfAbsent(key, k -> 0);
+                    counter = counter + 1;
+                    templatesMap.put(key, counter);
+                });
+
+        return templatesMap.entrySet().stream()
+                .filter(e -> e.getValue() >= 3)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 }

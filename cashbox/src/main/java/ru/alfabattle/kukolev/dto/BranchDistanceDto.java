@@ -11,5 +11,5 @@ public class BranchDistanceDto {
     private BigDecimal lon;
     private BigDecimal lat;
     private String address;
-    private BigDecimal distance;
+    private Integer distance;
 }

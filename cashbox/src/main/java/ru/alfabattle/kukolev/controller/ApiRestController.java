@@ -16,6 +16,8 @@ import static java.lang.Math.*;
 @RestController
 public class ApiRestController {
 
+    private static final int EARTH_RADIUS = 6371_000;
+
     @Autowired
     private BranchRepository repository;
     @Autowired
@@ -28,20 +30,30 @@ public class ApiRestController {
     }
 
     @GetMapping("/branches")
-    public BranchDistanceDto getById(@RequestParam("lat") BigDecimal lat, @RequestParam("lat") BigDecimal lon) {
+    public BranchDistanceDto getDistances(@RequestParam("lat") BigDecimal lat, @RequestParam("lon") BigDecimal lon) {
 
         if (lat == null || lon == null) throw new IllegalArgumentException();
 
         var branches = repository.findAll();
-        Branch branch = Collections.min(branches, Comparator.comparing(b -> calcDistance(lat, lon, b)));
+        var branch = Collections.min(branches, Comparator.comparing(b -> calcDistance(lat, lon, b)));
 
         var result = mapperFacade.map(branch, BranchDistanceDto.class);
-        result.setDistance(BigDecimal.valueOf(calcDistance(lat, lon, branch)));
+        result.setDistance(calcDistance(lat, lon, branch));
+        System.out.println(result);
         return result;
     }
 
-    private double calcDistance(BigDecimal lat, BigDecimal lon, Branch branch) {
-        return sqrt(pow(branch.getLat().doubleValue() - lat.doubleValue(), 2) +
-                pow(branch.getLon().doubleValue() - lon.doubleValue(), 2));
+    private int calcDistance(BigDecimal lat, BigDecimal lon, Branch branch) {
+        double lonRad = lon.doubleValue() * (PI / 180);
+        double latRad = lat.doubleValue() * (PI / 180);
+
+        double lonBrRad = branch.getLon().doubleValue() * (PI / 180);
+        double latBrRad = branch.getLat().doubleValue() * (PI / 180);
+
+        double sin1 = pow((0.5 * (latRad - latBrRad)), 2);
+        double sin2 = pow((0.5 * (lonRad - lonBrRad)), 2);
+
+        double dist = 2 * EARTH_RADIUS * asin(sqrt(sin1 + cos(latRad) * cos(latBrRad) * sin2));
+        return (int) dist;
     }
 }
